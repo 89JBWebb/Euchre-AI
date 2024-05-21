@@ -8,6 +8,14 @@ colors = {
     "Hearts": "Diamonds",
     "Diamonds": "Hearts"
 }
+rankings = {
+    "Ace": 6,
+    "King": 5,
+    "Queen": 4,
+    "Jack": 3,
+    "10": 2,
+    "9": 1
+}
 
 def shuffle():
     deck = []
