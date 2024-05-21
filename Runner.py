@@ -2,29 +2,25 @@ import Deck
 import Match
 import random
 
-#def winner(hand, trump):
-
-d = Deck.deal()
-
-print(d[0])
-print(["Jack", "Clubs"] in d[0])
-
 def winner(board, trump):
 
-    if board[0] == [["Jack"], [trump]]:
-            return 0
+    #check first card for bauers
+    if board[0] == ["Jack", trump]:
+        return 0
+    if board[0] == ["Jack", Deck.colors[trump]]:
+        if ["Jack", trump] not in board:
+            return i
 
     #look through cards
     r = 0
-    for i in range(1,3):
+    for i in range(1,4):
         
-        ##right bauer
-        if board[i] == [["Jack"], [trump]]:
+        #check for bauers
+        if board[i] == ["Jack", trump]:
             return i
-        
-        ##left bauer
-        if board[i] == [["Jack"], [Deck.colors[trump]]]:
-            r = i
+        if board[i] == ["Jack", Deck.colors[trump]]:
+            if ["Jack", trump] not in board:
+                return i
             continue
         
         #same suit
@@ -39,3 +35,8 @@ def winner(board, trump):
             continue
 
     return r
+
+d = [['9', 'Spades'], ['10', 'Spades'], ['Jack', 'Spades'], ['Jack', 'Clubs']]
+print(d)
+print("Clubs")
+print(winner(d, "Clubs"))
