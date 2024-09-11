@@ -13,10 +13,14 @@
 #   0 through 4
 
 class Player:
+
     def turnup(hand, card):
         print("hand: " + str(hand))
         print("card: " + str(card))
-        return 0
+        imp = input("> ")
+        while imp.notnumeric():
+            imp = input("> ")
+        return int(imp)
     def pick(hand, card):
         print("hand: " + str(hand))
         print("card: " + str(card))

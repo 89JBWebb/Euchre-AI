@@ -1,8 +1,8 @@
 import Deck
 import Match
+import Player
 import random
 
-d = [['9', 'Spades'], ['10', 'Spades'], ['Jack', 'Spades'], ['Jack', 'Clubs']]
-print(d)
-print("Clubs")
-print(winner(d, "Clubs"))
+d = Deck.deal()
+
+print(Player.Player.turnup(d[0], d[4][0]))
