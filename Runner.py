@@ -3,6 +3,8 @@ import Match
 import Player
 import random
 
-d = Deck.deal()
+p = Player.Player()
+plays = [Player.Player(), Player.Player(), Player.Player(), Player.Player()]
+m = Match.Match(plays)
 
-print(Player.Player.turnup(d[0], d[4][0]))
+m.round()
