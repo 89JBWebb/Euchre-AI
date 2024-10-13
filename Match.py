@@ -36,8 +36,12 @@ class Match:
 
         #trump
         self.turnup()
-        '''if self.trump == None:
-            self.pick()'''
+        if self.trump == None:
+            screwDealer = self.pick()
+            #screw the dealer is off
+            #if dealer doesn't pick then it is a misdeal
+            if screwDealer == -1:
+                return
    
         #tricks
         '''for i in range(0,5):
@@ -51,25 +55,26 @@ class Match:
 
     #call turnup protocols for players
     def turnup(self):
-        counter = (self.dealer+1)%4
-        while counter != self.dealer:
-            hodl = self.players[counter].turnup( self.hands[counter%4], self.hands[4][0] )
+        counter = self.dealer+1
+        while counter != self.dealer+5:
+            hodl = self.players[counter%4].turnup( self.hands[counter%4], self.hands[4][0] )
             if hodl != 0:
                 self.trump = hodl
                 self.caller = counter%2
                 return None
-            counter = (counter+1)%4
-        return None
+            counter += 1
+        return -1
     
     #call pick protocols for players
     def pick(self):
-        counter = (self.dealer+1)%4
-        while counter != self.dealer:
-            hodl = self.players[counter].pick()
-            if hodl != None:
+        counter = self.dealer+1
+        while counter != self.dealer+5:
+            hodl = self.players[counter%4].pick( self.hands[counter%4], self.hands[4][0] )
+            if hodl != 0:
                 self.trump = hodl
                 return hodl
-        return None
+            counter += 1
+        return -1
 
     #call trick protocols for players
     def trick(self):
@@ -110,7 +115,7 @@ class Match:
             
             #same suit
             if self.board[i][1] == self.board[r][1]:
-                if Deck.rankings[self.board[i][0]] > Deck.rankings[board[r][0]]:
+                if Deck.rankings[self.board[i][0]] > Deck.rankings[self.board[r][0]]:
                     r = i
                     continue
             
