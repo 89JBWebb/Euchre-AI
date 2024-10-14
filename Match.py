@@ -5,6 +5,7 @@ class Match:
     #define variables
     players = None
     score = [0,0]
+    intraScore = [0, 0]
     hands = []
     board = []
     trump = None
@@ -31,6 +32,9 @@ class Match:
     #play a round in four parts
     def round(self):
 
+        #define variables
+        self.intraScore = [0, 0]
+
         #deal
         self.hands = Deck.deal()
 
@@ -44,14 +48,16 @@ class Match:
                 return
    
         #tricks
-        '''for i in range(0,5):
+        for i in range(0,5):
             self.trick()
 
         #cleanup
         self.caller = None
         self.trump  = None
         self.dealer += 1
-        self.dealer %= 4'''
+        self.dealer %= 4
+        
+        
 
     #call turnup protocols for players
     def turnup(self):
@@ -81,15 +87,21 @@ class Match:
         counter = self.winnie
         if self.winnie is None:
             self.winnie = 1
-        self.players[self.winnie].lead(self.hands[counter])
+        
+        #get leader's decision
+        p = self.players[self.winnie].lead(self.hands[counter])
+        self.board += self.hands[counter].pop(p-1)
         counter+=1
-        counter%=4
-        while counter != self.winnie:
-            self.players[counter].play(self.board, self.hands[counter])
+
+        #get other decision
+        while counter < self.winnie + 4:
+            p = self.players[counter%4].play(self.board, self.hands[counter%4])
+            self.board += self.hands[counter%4].pop(p-1)
             counter+=1
-            counter%=4
+        
         #determine the winner
         self.winner()
+        self.board = []
     
     #find winner of trick
     def winner(self):
@@ -124,11 +136,20 @@ class Match:
                 r = i
                 continue
 
-        self.winner = r
+        self.winnie = r
+        self.intraScore[r%2] += 1
+        print("winner: " + str(r))
     
     #give points
     def points(self):
-        if self.winner%2 == self.caller%2:
-            self.points[self.winner%2] +=1
+        
+        #determine scoring team
+        scoringTeam = 0
+        if self.intraScore[1] > self.intraScore[0]:
+            scoringTeam = 1
+
+        #determine points
+        if scoringTeam != self.caller or self.intraScore[scoringTeam] == 5:
+            self.score[scoringTeam] += 2
         else:
-            self.points[self.winner+1%2] +=2
+            self.score[scoringTeam] += 1

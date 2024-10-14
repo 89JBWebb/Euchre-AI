@@ -43,7 +43,7 @@ class Player:
             else:
                 canNotSelect = i+1
 
-        #recruit
+        #get input
         imp = input("> ")
         while not imp.isnumeric() or int(imp) < 0 or int(imp) > 4 or int(imp) == canNotSelect:
             imp = input("> ")
@@ -53,10 +53,20 @@ class Player:
     #what card do you lead?
     def lead(self, hand):
         print("hand: " + str(hand))
-        return 0
+
+        #get legal input
+        imp = input("> ")
+        while not imp.isnumeric() or int(imp) < 1 or int(imp) > len(hand):
+            imp = input("> ")
+        return int(imp)
     
     #what card do you play given the board?
     def play(self, board, hand):
         print("hand: " + str(hand))
         print("board: " + str(board))
-        return 0
+
+        #get legal input
+        imp = input("> ")
+        while not imp.isnumeric() or int(imp) < 1 or int(imp) > len(hand):
+            imp = input("> ")
+        return int(imp)
