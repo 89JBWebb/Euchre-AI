@@ -38,7 +38,3 @@ def deal():
             hand[i] += [deck.pop()]
     hand[4] = deck
     return hand
-
-#first round
-#second round
-#tricks

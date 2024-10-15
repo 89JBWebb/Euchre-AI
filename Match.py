@@ -4,7 +4,7 @@ class Match:
 
     #define variables
     players = None
-    score = [0,0]
+    score = [0, 0]
     intraScore = [0, 0]
     hands = []
     board = []
@@ -39,7 +39,9 @@ class Match:
         self.hands = Deck.deal()
 
         #trump
-        self.turnup()
+        hodl = self.turnup()
+        if hodl != -1:
+            self.discard()
         if self.trump == None:
             screwDealer = self.pick()
             #screw the dealer is off
@@ -56,8 +58,7 @@ class Match:
         self.trump  = None
         self.dealer += 1
         self.dealer %= 4
-        
-        
+
 
     #call turnup protocols for players
     def turnup(self):
@@ -65,11 +66,19 @@ class Match:
         while counter != self.dealer+5:
             hodl = self.players[counter%4].turnup( self.hands[counter%4], self.hands[4][0] )
             if hodl != 0:
-                self.trump = hodl
+                self.trump = self.hands[4][0][1]
+                self.hands[self.dealer] += [self.hands[4].pop(0)]
                 self.caller = counter%2
                 return None
             counter += 1
         return -1
+
+
+    #if the card is called up, call on the dealer to discard
+    def discard(self):
+        hodl = self.players[self.dealer].discard(self.hands[self.dealer], self.trump)
+        self.hands[self.dealer].pop(hodl)
+
     
     #call pick protocols for players
     def pick(self):
@@ -89,56 +98,47 @@ class Match:
             self.winnie = 1
         
         #get leader's decision
-        p = self.players[self.winnie].lead(self.hands[counter])
-        self.board += self.hands[counter].pop(p-1)
+        p = self.players[counter].lead(self.hands[counter], self.trump)
+        self.board += [self.hands[counter].pop(p)]
         counter+=1
 
         #get other decision
         while counter < self.winnie + 4:
-            p = self.players[counter%4].play(self.board, self.hands[counter%4])
-            self.board += self.hands[counter%4].pop(p-1)
+            p = self.players[counter%4].play(self.board, self.hands[counter%4], self.trump)
+            self.board += [self.hands[counter%4].pop(p)]
             counter+=1
         
         #determine the winner
         self.winner()
         self.board = []
     
-    #find winner of trick
     def winner(self):
+        self.winnie += self.winnerHelper()
+        self.winnie %= 4
+        self.intraScore[self.winnie%2]
+        
+    #find winner of trick
+    def winnerHelper(self):
 
-        #check first card for bauers
-        if self.board[0] == ["Jack", self.trump]:
-            return 0
-        if self.board[0] == ["Jack", Deck.colors[self.trump]]:
-            if ["Jack", self.trump] not in self.board:
-                return i
+        #check for bauers
+        if ["Jack", self.trump] in self.board:
+            return self.board.index(["Jack", self.trump])
+        if ["Jack", Deck.colors[self.trump]] in self.board:
+            return self.board.index(["Jack", Deck.colors[self.trump]])
 
         #look through cards
         r = 0
         for i in range(1,4):
-            
-            #check for bauers
-            if self.board[i] == ["Jack", self.trump]:
-                return i
-            if self.board[i] == ["Jack", Deck.colors[self.trump]]:
-                if ["Jack", self.trump] not in self.board:
-                    return i
-                continue
-            
             #same suit
-            if self.board[i][1] == self.board[r][1]:
+            if self.eSuit(self.board[i]) == self.board[r][1]:
                 if Deck.rankings[self.board[i][0]] > Deck.rankings[self.board[r][0]]:
                     r = i
                     continue
-            
             #next card is trump and leading is not
-            if self.board[r][1] == self.trump:
+            if self.eSuit(self.board[i]) == self.trump and self.eSuit(self.board[r]) != self.trump:
                 r = i
                 continue
-
-        self.winnie = r
-        self.intraScore[r%2] += 1
-        print("winner: " + str(r))
+        return r
     
     #give points
     def points(self):
@@ -153,3 +153,10 @@ class Match:
             self.score[scoringTeam] += 2
         else:
             self.score[scoringTeam] += 1
+        
+        self.intraScore = [0,0]
+    
+    def eSuit(self, card):
+        if card[0] == "Jack" and Deck.colors[self.trump] == card[1]:
+            return self.trump
+        return card[1]
