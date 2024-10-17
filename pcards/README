@@ -1,0 +1,14 @@
+===================================================================
+A playing cards library
+
+Library Release 1.1
+
+Copyright 2013 Paul Griffiths
+Email: mail@paulgriffiths.net
+
+Distributed under the terms of the GNU General Public License.
+http://www.gnu.org/licenses/
+===================================================================
+
+Copy all the files in this archive into a directory within your
+Python search path, or update your $PYTHONPATH variable appropriately.
