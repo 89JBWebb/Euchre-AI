@@ -1,9 +1,15 @@
 import tkinter
-m = tkinter.Tk()
 from PIL import ImageTk, Image
 
+def a():
+    imgs = []
+    labels = []
+    imgs += [ImageTk.PhotoImage(Image.open("./images/12.gif"))]
+    labels += [tkinter.Label(image=imgs[-1])]
+    labels[-1].place(x=0,y=0)
+
+m = tkinter.Tk()
 m.title("Euchre GUI")
-img = ImageTk.PhotoImage(Image.open("./images/30.gif"))
-label1 = tkinter.Label(image=img)
-label1.place(x=0,y=0)
+m.minsize(400,100)
+a()
 m.mainloop()
