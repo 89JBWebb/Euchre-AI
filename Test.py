@@ -28,4 +28,4 @@ for i in range(100):
     for i in range(size):
         pop += [NN.mutate([2,3,2], father, 5)]
 
-NN.costSStest(ideal, pop[0])
+NN.test(ideal, pop[0])
