@@ -1,13 +1,11 @@
-import Deck
 import Match
 import Player
-import random
+import Robot
 
-'''p = Player.Player()
-plays = [Player.Player(), Player.Player(), Player.Player(), Player.Player()]
+plays = [Player.Player(), Robot.RRobot(), Robot.RRobot(), Robot.RRobot()]
 m = Match.Match(plays)
 
-m.round()'''
+m.round()
 
 '''m.trump = "Spades"
 m.board = [['10', 'Hearts']]

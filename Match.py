@@ -86,7 +86,7 @@ class Match:
         while counter != self.dealer+5:
             hodl = self.players[counter%4].pick( self.hands[counter%4], self.hands[4][0] )
             if hodl != 0:
-                self.trump = hodl
+                self.trump = Deck.suits[hodl-1]
                 return hodl
             counter += 1
         return -1
@@ -108,9 +108,16 @@ class Match:
             self.board += [self.hands[counter%4].pop(p)]
             counter+=1
         
+        #print board
+        i = 4-self.winnie
+        while i < 8-self.winnie:
+            print(self.board[i%4])
+            i+=1
+
         #determine the winner
         self.winner()
         self.board = []
+
     
     def winner(self):
         self.winnie += self.winnerHelper()

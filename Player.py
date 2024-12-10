@@ -72,7 +72,6 @@ class Player:
     
     #what card do you lead?
     def lead(self, hand, trump):
-        self.trump
 
         #print
         print("what card do you lead")
