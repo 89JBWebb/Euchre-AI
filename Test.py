@@ -1,25 +1,31 @@
 from copy import copy, deepcopy
 import numpy as np
-import random
+import NN
 
-dimensions = [20,30,20]
-weights = []
 
-for i in range(len(dimensions)-1):
-    weights += [np.random.rand(dimensions[i],dimensions[i+1])]
+ideal = [[[1,0],[1,0]],[[0,1],[0,1]],[[1,1],[0.5,0.5]],[[0,0],[0.5,0.5]]]
+size = 100
+pop = []
+for i in range(size):
+    pop += [NN.create([2,3,2])]
 
-dim = [weights[0].shape[0]]
-for w in weights:
-    dim += [w.shape[1]]
+for i in range(100):
+    results = []
+    cos = []
 
-print(dim)
+    for i in range(size):
+        cos += [NN.costSS(ideal, pop[i])]
 
-#print(weights)
+    print(sum(cos) / size)
 
-'''pos = [0,0,0]
-pos[0] = random.randint(0,len(dimensions)-2)
-pos[1] = random.randint(0,dimensions[pos[0]]-1)
-pos[2] = random.randint(0,dimensions[pos[0]+1]-1)
-print(pos)
-weights[pos[0]][pos[1]][pos[2]] += random.random()*2-1'''
-#print(weights)
+    min = 0
+    for i in range(size):
+        if cos[i] < cos[min]:
+            min = i
+
+    father = pop[min]
+    pop = []
+    for i in range(size):
+        pop += [NN.mutate([2,3,2], father, 5)]
+
+NN.costSStest(ideal, pop[0])
