@@ -18,13 +18,6 @@ class Match:
     def __init__(self, players):
         self.players = players
     
-    #print out the hands
-    def __str__(self):
-        result = ""
-        for h in self.hands:
-            result+=str(h)+"\n"
-        return result
-    
     #play one whole match
     def game(self):
         while self.score[0] < 10 and self.score[1] < 10:
@@ -75,10 +68,10 @@ class Match:
     def turnup(self):
         counter = self.dealer+1
         while counter != self.dealer+5:
-            hodl = self.players[counter%4].turnup( self.hands[counter%4], self.hands[4][0] )
+            hodl = self.players[counter%4].turnup( self.hands[counter%4], int(self.hands[4]/6) )
             if hodl != 0:
-                self.trump = self.hands[4][0][1]
-                self.hands[self.dealer] += [self.hands[4].pop(0)]
+                self.trump = int(self.hands[4]/6)
+                self.hands[self.dealer][self.hands[4]] = 1
                 self.caller = counter%2
                 return None
             counter += 1
@@ -88,7 +81,7 @@ class Match:
     #if the card is called up, call on the dealer to discard
     def discard(self):
         hodl = self.players[self.dealer].discard(self.hands[self.dealer], self.trump)
-        self.hands[self.dealer].pop(hodl)
+        self.hands[self.dealer][hodl] = 0
 
     
     #call pick protocols for players
@@ -110,20 +103,22 @@ class Match:
         
         #get leader's decision
         p = self.players[counter].lead(self.hands[counter], self.trump)
-        self.board += [self.hands[counter].pop(p)]
+        self.board += [p]
+        self.hands[counter][p] = 0
         counter+=1
 
         #get other decision
         while counter < self.trickWinner + 4:
             p = self.players[counter%4].play(self.board, self.hands[counter%4], self.trump)
-            self.board += [self.hands[counter%4].pop(p)]
+            self.board += [p]
+            self.hands[counter%4][p] = 0
             counter+=1
         
         if self.verbose:
             #print board
             i = 4-self.trickWinner
             while i < 8-self.trickWinner:
-                print(self.board[i%4])
+                print(Deck.toStr(self.board[i%4]))
                 i+=1
             print()
 
@@ -141,17 +136,17 @@ class Match:
     def ftwHelper(self):
 
         #check for bauers
-        if ["Jack", self.trump] in self.board:
-            return self.board.index(["Jack", self.trump])
-        if ["Jack", Deck.colors[self.trump]] in self.board:
-            return self.board.index(["Jack", Deck.colors[self.trump]])
+        if self.trump*6+2 in self.board:
+            return self.board.index(self.trump*6+2)
+        if ((self.trump+2)%4)*6+2 in self.board:
+            return self.board.index(((self.trump+2)%4)*6+2)
 
         #look through cards
         r = 0
         for i in range(1,4):
             #same suit
-            if self.eSuit(self.board[i]) == self.board[r][1]:
-                if Deck.rankings[self.board[i][0]] > Deck.rankings[self.board[r][0]]:
+            if self.eSuit(self.board[i]) == self.eSuit(self.board[r]):
+                if self.board[i] > self.board[r]:
                     r = i
                     continue
             #next card is trump and leading is not
@@ -177,6 +172,6 @@ class Match:
         self.trickScore = [0,0]
     
     def eSuit(self, card):
-        if card[0] == "Jack" and Deck.colors[self.trump] == card[1]:
+        if card%6==2 and self.trump == int(card/6):
             return self.trump
-        return card[1]
+        return int(card/6)

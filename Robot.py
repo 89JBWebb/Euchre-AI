@@ -62,6 +62,6 @@ class RRobot:
     
     #what cards can I play given trump
     def eSuit(self, card):
-        if card[0] == "Jack" and Deck.colors[self.trump] == card[1]:
+        if card%6 == 2 and (self.trump+2)%4 == int(card/6):
             return self.trump
-        return card[1]
+        return int(card/6)
