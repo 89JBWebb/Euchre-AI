@@ -30,7 +30,7 @@ class RRobot:
         return options[random.randint(0,3)]
     
     def discard(self, hand, trump):
-        return random.randint(1,6)
+        return random.randint(0,5)
     
     #what card do you lead?
     def lead(self, hand, trump):
@@ -48,7 +48,7 @@ class RRobot:
         followSuit = False
 
         for i in range(0,len(hand)):
-            if self.eSuit(hand[i]) == board[0][1]:
+            if self.eSuit(hand[i]) == self.eSuit(board[0]):
                 followSuit = True
                 break
 

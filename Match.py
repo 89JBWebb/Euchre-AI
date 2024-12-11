@@ -5,13 +5,14 @@ class Match:
     #define variables
     players = None
     score = [0, 0]
-    intraScore = [0, 0]
+    trickScore = [0, 0]
     hands = []
     board = []
     trump = None
     dealer = 0
-    winnie = 1
+    trickWinner = 1
     caller = None
+    verbose = False
     
     #define bots vs human players
     def __init__(self, players):
@@ -25,15 +26,16 @@ class Match:
         return result
     
     #play one whole match
-    def play(self):
+    def game(self):
         while self.score[0] < 10 and self.score[1] < 10:
             self.round()
+        print(self.score)
 
     #play a round in four parts
     def round(self):
 
         #define variables
-        self.intraScore = [0, 0]
+        self.trickScore = [0, 0]
 
         #deal
         self.hands = Deck.deal()
@@ -52,6 +54,15 @@ class Match:
         #tricks
         for i in range(0,5):
             self.trick()
+
+        #add round winner to the score
+        roundWinner = 0
+        if self.trickScore[1] > self.trickScore[0]:
+            roundWinner = 1
+        if self.trickScore[roundWinner] == 5 or roundWinner != self.caller:
+            self.score[roundWinner] += 2
+        else:
+            self.score[roundWinner] += 1
 
         #cleanup
         self.caller = None
@@ -93,9 +104,9 @@ class Match:
 
     #call trick protocols for players
     def trick(self):
-        counter = self.winnie
-        if self.winnie is None:
-            self.winnie = 1
+        counter = self.trickWinner
+        if self.trickWinner is None:
+            self.trickWinner = 1
         
         #get leader's decision
         p = self.players[counter].lead(self.hands[counter], self.trump)
@@ -103,29 +114,31 @@ class Match:
         counter+=1
 
         #get other decision
-        while counter < self.winnie + 4:
+        while counter < self.trickWinner + 4:
             p = self.players[counter%4].play(self.board, self.hands[counter%4], self.trump)
             self.board += [self.hands[counter%4].pop(p)]
             counter+=1
         
-        #print board
-        i = 4-self.winnie
-        while i < 8-self.winnie:
-            print(self.board[i%4])
-            i+=1
+        if self.verbose:
+            #print board
+            i = 4-self.trickWinner
+            while i < 8-self.trickWinner:
+                print(self.board[i%4])
+                i+=1
+            print()
 
         #determine the winner
-        self.winner()
+        self.findTrickWinner()
         self.board = []
 
     
-    def winner(self):
-        self.winnie += self.winnerHelper()
-        self.winnie %= 4
-        self.intraScore[self.winnie%2]
+    def findTrickWinner(self):
+        self.trickWinner += self.ftwHelper()
+        self.trickWinner %= 4
+        self.trickScore[self.trickWinner%2] += 1
         
     #find winner of trick
-    def winnerHelper(self):
+    def ftwHelper(self):
 
         #check for bauers
         if ["Jack", self.trump] in self.board:
@@ -152,16 +165,16 @@ class Match:
         
         #determine scoring team
         scoringTeam = 0
-        if self.intraScore[1] > self.intraScore[0]:
+        if self.trickScore[1] > self.trickScore[0]:
             scoringTeam = 1
 
         #determine points
-        if scoringTeam != self.caller or self.intraScore[scoringTeam] == 5:
+        if scoringTeam != self.caller or self.trickScore[scoringTeam] == 5:
             self.score[scoringTeam] += 2
         else:
             self.score[scoringTeam] += 1
         
-        self.intraScore = [0,0]
+        self.trickScore = [0,0]
     
     def eSuit(self, card):
         if card[0] == "Jack" and Deck.colors[self.trump] == card[1]:

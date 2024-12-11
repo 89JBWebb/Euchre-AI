@@ -2,10 +2,10 @@ import Match
 import Player
 import Robot
 
-plays = [Player.Player(), Robot.RRobot(), Robot.RRobot(), Robot.RRobot()]
+plays = [Robot.RRobot(), Robot.RRobot(), Robot.RRobot(), Robot.RRobot()]
 m = Match.Match(plays)
 
-m.round()
+m.game()
 
 '''m.trump = "Spades"
 m.board = [['10', 'Hearts']]
