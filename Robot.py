@@ -26,7 +26,7 @@ class RRobot:
     #call a trump or no?
     def pick(self, hand, card):
         options = [0,1,2,3,4]
-        options.pop(Deck.suits.index(card[1])+1)
+        options.pop(int(card/6)+1)
         return options[random.randint(0,3)]
     
     def discard(self, hand, trump):
@@ -44,23 +44,30 @@ class RRobot:
     
     #what cards can I play given the board
     def legalPlays(self, board, hand):
+        #define variables
+        hodl = []
         result = []
         followSuit = False
 
+        #check to if if you can follow suit
         for i in range(0,len(hand)):
-            if self.eSuit(hand[i]) == self.eSuit(board[0]):
-                followSuit = True
-                break
+            if hand[i]:
+                hodl += [i]
+                if self.eSuit(i) == self.eSuit(board[0]):
+                    followSuit = True
 
+        #if you cant then you can play anything in your hand
         if not followSuit:
-            return range(0,len(hand))
+            return hodl
 
-        for i in range(0,len(hand)):
-            if self.eSuit(hand[i]) == self.eSuit(board[0]):
+        #put together cards that can follow suit
+        for i in range(0,len(hodl)):
+            if self.eSuit(hodl[i]) == self.eSuit(board[0]):
                 result += [i]
         return result
     
-    #what cards can I play given trump
+
+    #what is this card's suit (keeping in mind left bauers)
     def eSuit(self, card):
         if card%6 == 2 and (self.trump+2)%4 == int(card/6):
             return self.trump

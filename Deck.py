@@ -10,12 +10,14 @@ toValue = {
     1: "10",
     0: "9"
 }
+
 toSuit = {
     0: "Spades",
     1: "Hearts",
     2: "Clubs",
     3: "Diamonds"
 }
+
 valueRankings = {
     "Ace": 5,
     "King": 4,
@@ -47,7 +49,6 @@ def deal():
             j += 1
         i += 1
     board += [order.pop()]
-    print(board)
     return board
 
 def toStr(x):

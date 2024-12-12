@@ -83,14 +83,13 @@ class Match:
         hodl = self.players[self.dealer].discard(self.hands[self.dealer], self.trump)
         self.hands[self.dealer][hodl] = 0
 
-    
     #call pick protocols for players
     def pick(self):
         counter = self.dealer+1
         while counter != self.dealer+5:
-            hodl = self.players[counter%4].pick( self.hands[counter%4], self.hands[4][0] )
+            hodl = self.players[counter%4].pick( self.hands[counter%4], self.hands[4] )
             if hodl != 0:
-                self.trump = Deck.suits[hodl-1]
+                self.trump = hodl-1
                 return hodl
             counter += 1
         return -1
