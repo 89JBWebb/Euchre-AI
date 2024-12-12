@@ -13,20 +13,22 @@ class Match:
     trickWinner = 1
     caller = None
     verbose = False
-    
+
+
     #define bots vs human players
     def __init__(self, players):
         self.players = players
-    
+
+
     #play one whole match
     def game(self):
         while self.score[0] < 10 and self.score[1] < 10:
             self.round()
         print(self.score)
 
+
     #play a round in four parts
     def round(self):
-
         #define variables
         self.trickScore = [0, 0]
 
@@ -83,6 +85,7 @@ class Match:
         hodl = self.players[self.dealer].discard(self.hands[self.dealer], self.trump)
         self.hands[self.dealer][hodl] = 0
 
+
     #call pick protocols for players
     def pick(self):
         counter = self.dealer+1
@@ -93,6 +96,7 @@ class Match:
                 return hodl
             counter += 1
         return -1
+
 
     #call trick protocols for players
     def trick(self):
@@ -125,12 +129,14 @@ class Match:
         self.findTrickWinner()
         self.board = []
 
-    
+
+    #find winner of trick    
     def findTrickWinner(self):
         self.trickWinner += self.ftwHelper()
         self.trickWinner %= 4
         self.trickScore[self.trickWinner%2] += 1
-        
+
+
     #find winner of trick
     def ftwHelper(self):
 
@@ -153,7 +159,8 @@ class Match:
                 r = i
                 continue
         return r
-    
+
+
     #give points
     def points(self):
         
@@ -169,7 +176,9 @@ class Match:
             self.score[scoringTeam] += 1
         
         self.trickScore = [0,0]
-    
+
+
+    #return suit (keep in mind left bauers)    
     def eSuit(self, card):
         if card%6==2 and self.trump == int(card/6):
             return self.trump
