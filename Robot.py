@@ -12,7 +12,6 @@
 #play
 #   0 through 4
 
-import Deck
 import random
 
 class RRobot:
