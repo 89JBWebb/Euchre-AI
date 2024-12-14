@@ -32,11 +32,11 @@ class RRobot:
         return random.randint(0,5)
     
     #what card do you lead?
-    def lead(self, hand, trump):
+    def lead(self, hand, trump, discard):
         return random.randint(0, len(hand)-1)
     
     #what card do you play given the board?
-    def play(self, board, hand, trump):
+    def play(self, board, hand, trump, discard):
         self.trump = trump
         options = self.legalPlays(board, hand)
         return options[random.randint(0, len(options)-1)]

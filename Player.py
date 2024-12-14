@@ -71,7 +71,7 @@ class Player:
         return int(imp)
     
     #what card do you lead?
-    def lead(self, hand, trump):
+    def lead(self, hand, trump, discard):
 
         #print
         print("what card do you lead")
@@ -85,7 +85,7 @@ class Player:
         return int(imp)
     
     #what card do you play given the board?
-    def play(self, board, hand, trump):
+    def play(self, board, hand, trump, discard):
         self.trump = trump
         print("what card do you play")
         print("trump: "+ trump)

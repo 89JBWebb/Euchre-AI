@@ -1,4 +1,3 @@
-import random
 import NN
 
 class NRobot:
@@ -11,21 +10,9 @@ class NRobot:
 
     #order it up or no?
     def turnup(self, hand, card):
-        input = []
 
-        #add trump colors
-        t = int(card/6)
-        input += hand[t*6:(t+1)*6]
-        t = (t+2)%4
-        input += hand[t*6:(t+1)*6]
-
-        #add rest
-        if t%2:
-            input += hand[0:6] + hand[12:18]
-        else:
-            input += hand[6:12] + hand[18:24]
-
-        #add value
+        #create input
+        input = self.order(hand, int(card/6))
         hodl = [0]*6
         hodl[card%6] = 1
         input += hodl
@@ -57,77 +44,138 @@ class NRobot:
 
     def discard(self, hand, trump):
         
-        input = []
-
-        #add trump colors
-        input += hand[trump*6:(trump+1)*6]
-        t = (trump+2)%4
-        input += hand[t*6:(t+1)*6]
-
-        #add rest
-        if t%2:
-            input += hand[0:6] + hand[12:18]
-        else:
-            input += hand[6:12] + hand[18:24]
+        #get input
+        ho = self.order(hand, trump)
 
         #get output
-        output = NN.process(self.weights[2],input)
+        output = NN.process(self.weights[2],ho)
 
         #find max output
         max = 0
+        while ho[max]:
+            max+=1
         for i in range(0,len(output)):
-            if output[i] > output[max]:
+            if ho[i] and output[i] > output[max]:
                 max = i
-        return max
+        return self.deOrder(max, trump)
 
-    def lead(self, hand, trump):
+    #ask what card to lead a trick
+    def lead(self, hand, trump, discard):
+        input = []
+        ho = self.order(hand, trump)
+        input += ho
+        input += self.order(discard, trump)
+
+        #get output
+        output = NN.process(self.weights[3],input)
+
+        #find max output
+        max = 0
+        while ho[max]:
+            max+=1
+        for i in range(0,len(output)):
+            if ho[i] and output[i] > output[max]:
+                max = i
+        return self.deOrder(max,trump)
+
+    def play(self, board, hand, trump, discard):
+        
+        self.trump = trump
 
         #create input
-        input += hand
-        hodl = [0]*4
-        hodl[trump] = 1
-        input += hodl
+        input = [0]*24
+        
+        #my team
+        hodl = [0]*24
+        i = len(board)-2
+        if i >= 0:
+            hodl[board[i]] = 1
+        input += self.order(hodl, trump)
+
+        #opponent team
+        hodl = [0]*24
+        i = len(board)-1
+        while i >= 0:
+            hodl[board[i]] = 1
+            i -= 2
+        input += self.order(hodl, trump)
+
+        #hand
+        ho = self.order(hand, trump)
+        input += ho
+
+        #discard
+        input += self.order(discard, trump)
 
         #get output
-        output = NN.process(self.weights[2],input)
+        output = NN.process(self.weights[4],input)
 
         #find max output
         max = 0
+        legals = self.legalPlays(hand, board)
+        while legals[max]:
+            max+=1
         for i in range(0,len(output)):
-            if output[i] > output[max]:
+            if legals[i] and output[i] > output[max]:
                 max = i
-        return max
-
-    def play(self, board, hand, trump):
-        return -1
+        return self.deOrder(max,trump)
 
     #what cards can I play given the board
     def legalPlays(self, board, hand):
-        #define variables
-        hodl = []
         result = []
-        followSuit = False
 
-        #check to if if you can follow suit
-        for i in range(0,len(hand)):
+        #record which cards in hand follow suit
+        for i in range(0, 24):
+            if hand[i] and self.eSuit(hand[i], self.trump) == self.eSuit(board[0], self.trump):
+                result += i
+                break
+        
+        #return some cards if follow suit
+        if len(result) > 0:
+            return result
+        
+        #return all cards in hand
+        for i in range(0, 24):
             if hand[i]:
-                hodl += [i]
-                if self.eSuit(i) == self.eSuit(board[0]):
-                    followSuit = True
-
-        #if you cant then you can play anything in your hand
-        if not followSuit:
-            return hodl
-
-        #put together cards that can follow suit
-        for i in range(0,len(hodl)):
-            if self.eSuit(hodl[i]) == self.eSuit(board[0]):
-                result += [i]
+                result += i
         return result
-    
+
 
     #what is this card's suit (keeping in mind left bauers)
     def eSuit(self, card):
         if card%6 == 2 and (self.trump+2)%4 == int(card/6):
             return self.trump
         return int(card/6)
+    
+    #order so 1st trump 2nd of trump color
+    def order(self, set, trump):
+        #define result
+        result = [0]*24
+
+        #add trump colors
+        t = trump
+        result += set[t*6:(t+1)*6]
+        t = (t+2)%4
+        result += set[t*6:(t+1)*6]
+
+        #add rest
+        if t%2:
+            result += set[0:6] + set[12:18]
+        else:
+            result += set[6:12] + set[18:24]
+        return result
+    
+    def deOrder(self, n, trump):
+        if int(n/6) == 0:
+            return n%6+trump*6
+        if int(n/6) == 1:
+            return n%6+((trump+2)%4)*6
+        if int(n/6) == 2:
+            if trump%2:
+                return n%6
+            return n%6+6
+        if int(n/6) == 3:
+            if trump%2:
+                return n%6+12
+            return n%6+18
+        return -1

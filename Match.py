@@ -13,6 +13,7 @@ class Match:
     trickWinner = 1
     caller = None
     verbose = False
+    d = []
 
 
     #define bots vs human players
@@ -34,6 +35,7 @@ class Match:
 
         #deal
         self.hands = Deck.deal()
+        self.d = [0]*24
 
         #trump
         hodl = self.turnup()
@@ -105,14 +107,14 @@ class Match:
             self.trickWinner = 1
         
         #get leader's decision
-        p = self.players[counter].lead(self.hands[counter], self.trump)
+        p = self.players[counter].lead(self.hands[counter], self.trump, self.d)
         self.board += [p]
         self.hands[counter][p] = 0
         counter+=1
 
         #get other decision
         while counter < self.trickWinner + 4:
-            p = self.players[counter%4].play(self.board, self.hands[counter%4], self.trump)
+            p = self.players[counter%4].play(self.board, self.hands[counter%4], self.trump, self.d)
             self.board += [p]
             self.hands[counter%4][p] = 0
             counter+=1
@@ -127,6 +129,8 @@ class Match:
 
         #determine the winner
         self.findTrickWinner()
+        for i in self.board:
+            self.d[i] = 1
         self.board = []
 
 
