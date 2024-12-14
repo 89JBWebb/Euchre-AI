@@ -8,6 +8,14 @@ class NRobot:
     def __init__(self, weights):
         self.weights = weights
 
+    def random(self):
+        self.weights = []
+        self.weights += NN.create([30,50,50,25,2])
+        self.weights += NN.create([24,50,50,25,5])
+        self.weights += NN.create([24,50,50,50,24])
+        self.weights += NN.create([48,50,50,50,24])
+        self.weights += NN.create([96,100,75,50,24])
+
     #order it up or no?
     def turnup(self, hand, card):
 
