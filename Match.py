@@ -25,7 +25,10 @@ class Match:
     def game(self):
         while self.score[0] < 10 and self.score[1] < 10:
             self.round()
-        print(self.score)
+        result = self.score
+        self.score = [0,0]
+        self.dealer = 0
+        return result
 
 
     #play a round in four parts

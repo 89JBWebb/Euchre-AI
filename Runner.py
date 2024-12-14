@@ -1,10 +1,14 @@
-import Deck
 import Match
-import Player
-import Robot
+import NRobot
 
+dolly = NRobot.NRobot([])
+dolly.random()
 
-plays = [Robot.RRobot(), Robot.RRobot(), Robot.RRobot(), Robot.RRobot()]
+plays = [dolly,dolly,dolly,dolly]
 m = Match.Match(plays)
 
-m.game()
+counter = 0
+for i in range(0,100):
+    if m.game()[0] >= 10:
+        counter+=1
+print(counter)

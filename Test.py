@@ -1,12 +1,18 @@
-import DecisionTree
+import NRobot
+import pprint, pickle
+import os
 
-def isOdd(x):
-    return x%2
 
+dolly = NRobot.NRobot([])
+dolly.random()
 
-a = DecisionTree.Node()
-a.yes = 999
-a.no = -1
-a.d = isOdd
+output = open('./Models/save.pkl', 'wb')
+pickle.dump(dolly.weights, output)
+output.close()
 
-print(a.eval(3))
+pkl_file = open('./Models/save.pkl', 'rb')
+data1 = pickle.load(pkl_file)
+pprint.pprint(data1)
+pkl_file.close()
+os.remove("./Models/save.pkl")
+

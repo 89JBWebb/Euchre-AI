@@ -4,17 +4,23 @@ class NRobot:
 
     trump = None
     weights = []
+    e = [[30,50,50,25,2],[24,50,50,25,5],[24,50,50,50,24],[48,50,50,50,24],[96,100,75,50,24]]
+    r = [5300, 5075, 7400, 8600, 22050]
 
     def __init__(self, weights):
         self.weights = weights
 
     def random(self):
         self.weights = []
-        self.weights += NN.create([30,50,50,25,2])
-        self.weights += NN.create([24,50,50,25,5])
-        self.weights += NN.create([24,50,50,50,24])
-        self.weights += NN.create([48,50,50,50,24])
-        self.weights += NN.create([96,100,75,50,24])
+        for i in self.e:
+            self.weights += [NN.create(i)]
+    
+    def mutate(self, rate):
+        newt = []
+        for i in range(0,len(self.weights)):
+            newt += NN.mutate(self.e[i], self.weights[i], int(self.r[i]*rate))
+        return NRobot(newt)
+
 
     #order it up or no?
     def turnup(self, hand, card):
@@ -91,7 +97,7 @@ class NRobot:
         self.trump = trump
 
         #create input
-        input = [0]*24
+        input = []
         
         #my team
         hodl = [0]*24
@@ -120,11 +126,10 @@ class NRobot:
 
         #find max output
         max = 0
-        legals = self.legalPlays(hand, board)
-        while legals[max]:
-            max+=1
+        legals = self.legalPlays(board, hand)
+        max = legals[0]
         for i in range(0,len(output)):
-            if legals[i] and output[i] > output[max]:
+            if i in legals and output[i] > output[max]:
                 max = i
         return self.deOrder(max,trump)
 
@@ -134,8 +139,8 @@ class NRobot:
 
         #record which cards in hand follow suit
         for i in range(0, 24):
-            if hand[i] and self.eSuit(hand[i], self.trump) == self.eSuit(board[0], self.trump):
-                result += i
+            if hand[i] and self.eSuit(hand[i]) == self.eSuit(board[0]):
+                result += [i]
                 break
         
         #return some cards if follow suit
@@ -145,7 +150,7 @@ class NRobot:
         #return all cards in hand
         for i in range(0, 24):
             if hand[i]:
-                result += i
+                result += [i]
         return result
 
 
@@ -158,7 +163,7 @@ class NRobot:
     #order so 1st trump 2nd of trump color
     def order(self, set, trump):
         #define result
-        result = [0]*24
+        result = []
 
         #add trump colors
         t = trump

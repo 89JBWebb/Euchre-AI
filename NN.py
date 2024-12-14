@@ -23,6 +23,13 @@ def getDim(weights):
         dim += [w.shape[1]]
     return dim
 
+def weightNum(weights):
+    hodl = getDim(weights)
+    result = 0
+    for i in range(0, len(hodl)-1):
+        result+= hodl[i]*hodl[i+1]
+    return result
+
 def mutate(dim, weights, n):
     result = copy.deepcopy(weights)
     for i in range(n):
