@@ -18,7 +18,7 @@ class NRobot:
     def mutate(self, rate):
         newt = []
         for i in range(0,len(self.weights)):
-            newt += NN.mutate(self.e[i], self.weights[i], int(self.r[i]*rate))
+            newt += [NN.mutate(self.e[i], self.weights[i], int(self.r[i]*rate))]
         return NRobot(newt)
 
 
